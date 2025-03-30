@@ -1,0 +1,4 @@
+apiVersion: v2
+description: Dummy helm Service
+name: dummyservice
+version: 1.0.0

@@ -1,0 +1,38 @@
+{{- /* dummy deployment */}}
+apiVersion: apps/v1
+kind: Deployment
+metadata: {{ $dummy := printf "%s" .Release.Name | trunc 63 | trimSuffix "-" }}
+  name: {{ $dummy }}
+  namespace: {{ .Release.Namespace }}
+{{- include "dummy.labels" . | indent 2 }}
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: {{ .Values.dummy.rolloutSurge }}
+      maxUnavailable: {{ .Values.dummy.rolloutUnavailable }}
+  selector:
+    matchLabels:
+      app: {{ $dummy }}
+  replicas: {{ .Values.dummy.min_replicas }}
+  template:
+    metadata:
+{{- include "dummy.labels" . | indent 6 }}
+        app: {{ $dummy }}
+      annotations:
+        timestamp: {{ now | unixEpoch | quote }}
+    spec:
+      serviceAccountName: {{ .Values.dummy.serviceAccount }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: {{ printf "%s:%s" .Values.dummy.image .Values.dummy.image_tag }}
+        imagePullPolicy: {{ .Values.dummy.imagePullPolicy }}
+        ports:
+        - containerPort: {{ .Values.dummy.internalPort }}
+      {{- if eq .Values.dummy.debug true }}
+        command: ["npm"]
+        args: ["run", "start", "dummy"]
+      {{- end }}
+        env:
+        - name: ENV
+          value: {{ .Values.global.env }}

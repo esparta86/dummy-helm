@@ -1,0 +1,27 @@
+global:
+  team: devops
+
+
+dummy:
+  debug: false
+  integration_tests_enabled: true
+  serviceAccount: sa-dummy
+  image: esparta2018/grpc-service-example-go
+  image_tag: v2
+  imagePullPolicy: Always
+  replicaCount: 1
+  internalPort: 2137
+  debugPort: 9229
+  rolloutSurge: 50%
+  rolloutUnavailable: 0
+  min_replicas: 1
+  max_replicas: 2
+  min_memory: 250Mi
+  max_memory: 500Mi
+  min_cpu: 50m
+  max_cpu: 300m
+  parameters:
+    env_value1: value1
+  service:
+    type: ClusterIP
+
